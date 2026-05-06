@@ -1,0 +1,1127 @@
+**********************************************************
+Practical NO:01:
+YELLOW DATASET-(iris dataset)
+saurabh singh · Updated 8 years ago
+**********************************************************
+Data Wrangling, I
+Perform the following operations using Python on any open source dataset (e.g., data.csv)
+1. Import all the required Python Libraries.
+2. Locate an open source data from the web (e.g., https://www.kaggle.com). Provide a clear
+   description of the data and its source (i.e., URL of the web site).
+
+CODE:
+
+import pandas as pd
+
+import numpy as np
+
+df = pd.read_csv("D:/Downloads/archive (2)/Iris.csv")
+
+df
+
+df.isnull()
+
+df.notnull()
+
+df.describe()
+
+df.dtypes
+
+df.index
+
+df.tail(n=5)
+
+df.head(n=5)
+
+df.columns
+
+df.columns.values
+
+df.describe(include='all')
+
+df.sort_index(axis=1, ascending=False)
+
+df.iloc[5]
+
+df[0:3]
+
+df.iloc[:2, :]
+
+df.iloc[:,:4]
+
+df.iloc[:2,:4]
+
+df.iloc[3:5,0:2]
+
+df.iloc[[1,2,4],[0,2]]
+
+df.iloc[1:3,:]
+
+df.iloc[:,1:3]
+
+df.iloc[1,1]
+
+df['SepalLengthCm'].iloc[5]
+
+cols_2_4=df.columns[2:4]
+df[cols_2_4]
+
+df[df.columns[2:4]].iloc[5:1,0]
+
+df.isnull().any()
+
+df.isnull().sum(axis=1)
+
+df.isnull().sum()
+
+df.isna().sum()
+
+df['PetalLengthCm']=df['PetalLengthCm'].astype(int)
+print(df[['PetalLengthCm']].head())
+
+df['PetalLengthCm']=df['PetalLengthCm'].round().astype(int)
+print(df[['PetalLengthCm']].head())
+
+from sklearn import preprocessing
+
+df.head()
+
+min_max_scaler = preprocessing.MinMaxScaler()
+
+x=df.iloc[:,:4]
+
+x_scaled = min_max_scaler.fit_transform(x)
+
+df_normalized = pd.DataFrame(x_scaled)
+df_normalized
+
+df['Species'].unique()
+
+******************************************************************************************************************
+Practical:02
+******************************************************************************************************************
+
+Data Wrangling II
+Create an “Academic performance” dataset of students and perform the following operations using
+Python.
+1. Scan all variables for missing values and inconsistencies. If there are missing values and/or
+inconsistencies, use any of the suitable techniques to deal with them.
+2. Scan all numeric variables for outliers. If there are outliers, use any of the suitable
+techniques to deal with them
+
+CODE:
+
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler
+
+data = {
+    'Student_ID': [1,2,3,4,5,6,7,8,9,10],
+    'Maths': [85, 90, np.nan, 45, 78, 200, 88, 76, np.nan, 95],
+    'Science': [80, 85, 78, np.nan, 75, 82, 400, 70, 68, 90],
+    'English': [78, 88, 84, 60, np.nan, 79, 85, 300, 72, 88],
+    'Attendance': [90, 95, 85, 80, np.nan, 92, 88, 91, 87, 93]
+}
+
+
+df = pd.DataFrame(data)
+
+
+print("Original Dataset:\n", df)
+
+
+print("\nMissing Values:\n", df.isnull().sum())
+
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+df
+
+num_cols = ['Maths', 'Science', 'English', 'Attendance']
+
+Q1 = df[num_cols].quantile(0.25)
+Q3 = df[num_cols].quantile(0.75)
+IQR = Q3 - Q1
+
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+df[num_cols] = df[num_cols].clip(lower, upper, axis=1)
+
+df
+
+scaler = MinMaxScaler()
+
+
+df[['Maths', 'Science', 'English', 'Attendance']] = scaler.fit_transform(
+    df[['Maths', 'Science', 'English', 'Attendance']]
+)
+
+
+df
+
+import matplotlib.pyplot as plt
+df.boxplot()
+plt.show()
+
+**************************************************************************************************************
+
+Practical No:03
+
+Employee dataset
+tawfik elmetwally · Updated 3 years ago
+****************************************************************************************************************
+
+statement:01:
+*****************************************************************************************************************
+Descriptive Statistics - Measures of Central Tendency and variability
+Perform the following operations on any open source dataset (e.g., data.csv)
+1. Provide summary statistics (mean, median, minimum, maximum, standard deviation) for
+a dataset (age, income etc.)
+
+CODE:
+
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv('/content/sample_data/data.csv')
+
+df
+
+df['Age'].mean()
+
+df['Age'].median()
+
+df['Age'].std()
+
+df['Income'].mean()
+
+df['Income'].median()
+
+df['Income'].min()
+
+df['Income'].max()
+
+df['Income'].std()
+
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+df['Gender'] = le.fit_transform(df['Gender'])
+df
+
+df.groupby('Gender')['Income'].mean()
+
+df.groupby('Gender')['Income'].median()
+
+df.groupby('Gender')['Income'].min()
+
+df.groupby('Gender')['Income'].max()
+
+df.groupby('Gender')['Income'].std()
+*******************************************************************************************************
+Statement:02
+*******************************************************************************************************
+Write a Python program to display some basic statistical details like percentile, mean,
+standard deviation etc. of the species of ‘Iris-setosa’, ‘Iris-versicolor’ and ‘Iris-versicolor’
+of iris.csv dataset.
+
+CODE:
+
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv('/content/sample_data/Iris.csv')
+df.head()
+
+# Filtering the species for iris-setosa
+
+setosa = df[df['Species'] == 'Iris-setosa']
+
+# Individual Metric Calculations
+setosa['PetalLengthCm'].mean()
+setosa['PetalWidthCm'].mean()
+setosa['SepalLengthCm'].mean()
+setosa['SepalWidthCm'].mean()
+
+setosa['PetalLengthCm'].std()
+setosa['PetalWidthCm'].std()
+setosa['SepalLengthCm'].std()
+setosa['SepalWidthCm'].std()
+
+# Quantiles
+setosa['PetalLengthCm'].quantile(0.25)
+setosa['PetalLengthCm'].quantile(0.50)
+setosa['PetalLengthCm'].quantile(0.75)
+
+# Overall Description Block
+print("Iris-setosa Statistics")
+print("Mean:\n", setosa.mean(numeric_only=True))
+print("Standard Deviation:\n", setosa.std(numeric_only=True))
+print("25th Percentile:\n", setosa.quantile(0.25, numeric_only=True))
+print("50th Percentile:\n", setosa.quantile(0.50, numeric_only=True))
+print("75th Percentile:\n", setosa.quantile(0.75, numeric_only=True))
+
+# Filtering the species for Iris-versicolor
+versicolor = df[df['Species'] == 'Iris-versicolor']
+
+# Individual Metric Calculations
+versicolor['PetalLengthCm'].mean()
+versicolor['PetalWidthCm'].mean()
+versicolor['SepalLengthCm'].mean()
+versicolor['SepalWidthCm'].mean()
+
+versicolor['PetalLengthCm'].std()
+versicolor['PetalWidthCm'].std()
+versicolor['SepalLengthCm'].std()
+versicolor['SepalWidthCm'].std()
+
+# Overall Description Block
+print("\nIris-versicolor Statistics")
+print("Mean:\n", versicolor.mean(numeric_only=True))
+print("Standard Deviation:\n", versicolor.std(numeric_only=True))
+print("25th Percentile:\n", versicolor.quantile(0.25, numeric_only=True))
+print("50th Percentile:\n", versicolor.quantile(0.50, numeric_only=True))
+print("75th Percentile:\n", versicolor.quantile(0.75, numeric_only=True))
+
+# Filtering the species for Iris-virginica
+virginica = df[df['Species'] == 'Iris-virginica']
+
+# Individual Metric Calculations
+virginica['PetalLengthCm'].mean()
+virginica['PetalWidthCm'].mean()
+virginica['SepalLengthCm'].mean()
+virginica['SepalWidthCm'].mean()
+
+# Overall Description Block
+print("\nIris-virginica Statistics")
+print("Mean:\n", virginica.mean(numeric_only=True))
+print("Standard Deviation:\n", virginica.std(numeric_only=True))
+print("25th Percentile:\n", virginica.quantile(0.25, numeric_only=True))
+print("50th Percentile:\n", virginica.quantile(0.50, numeric_only=True))
+print("75th Percentile:\n", virginica.quantile(0.75, numeric_only=True))
+
+
+************************************************************************************************************************************
+Practical:04
+************************************************************************************************************************************
+Arun Jangir · Updated 3 years ago
+Boston Housing dataset
+
+******************************************************
+Data Analytics I
+Create a Linear Regression Model using Python/R to predict home prices using Boston Housing
+Dataset (https://www.kaggle.com/c/boston-housing).
+
+CODE:
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("housing.csv")
+
+print(df.head())
+
+print(df.isnull().sum())
+
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+
+X = df.drop('medv', axis=1)
+y = df['medv']
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print("\nModel Evaluation:")
+print("Mean Squared Error:", mse)
+print("R2 Score:", r2)
+
+
+result = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+print("\nActual vs Predicted:\n", result.head())
+
+plt.scatter(y_test, y_pred)
+plt.xlabel("Actual Prices")
+plt.ylabel("Predicted Prices")
+plt.title("Actual vs Predicted House Prices")
+plt.show()
+***********************************************************************************************************************
+Practical:05
+
+Nagendra Kumar Reddy Syamala · Updated 3 years ago
+Social_Network_Ads
+**************************************************************************************************************************
+
+Data Analytics II
+1. Implement logistic regression using Python/R to perform classification on
+Social_Network_Ads.csv dataset.
+2. Compute Confusion matrix to find TP, FP, TN, FN, Accuracy, Error rate, Precision, Recall
+on the given dataset
+*******************************************************************************************************************************
+CODE:
+
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+from sklearn.model_selection import train_test_split 
+from sklearn.preprocessing import StandardScaler 
+from sklearn.linear_model import LogisticRegression 
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
+
+df = pd.read_csv("Social_Network_Ads.csv")
+
+df.head() 
+
+X = df[['Age', 'EstimatedSalary']] 
+Y = df['Purchased'] 
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+
+scaler = StandardScaler() 
+
+X_train = scaler.fit_transform(X_train) 
+X_test = scaler.transform(X_test) 
+
+model = LogisticRegression() 
+
+
+model.fit(X_train, Y_train) 
+
+Y_pred = model.predict(X_test) 
+cm = confusion_matrix(Y_test, Y_pred) 
+TN, FP, FN, TP = cm.ravel()
+
+accuracy = accuracy_score(Y_test, Y_pred) 
+
+
+error_rate = 1 - accuracy 
+
+
+precision = precision_score(Y_test, Y_pred) 
+recall = recall_score(Y_test, Y_pred)
+
+from sklearn.metrics import f1_score 
+f1 = f1_score(Y_test, Y_pred) 
+
+
+print(f"Accuracy: {accuracy:.2f}") 
+print(f"Error Rate: {error_rate:.2f}") 
+print(f"Precision: {precision:.2f}") 
+print(f"Recall: {recall:.2f}") 
+print(f"F1 Score: {f1:.2f}")
+
+plt.figure(figsize=(6, 4)) 
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Not Purchased', 
+'Purchased'], yticklabels=['Not Purchased', 'Purchased']) 
+plt.xlabel("Predicted") 
+plt.ylabel("Actual") 
+plt.title("Confusion Matrix") 
+plt.show()
+*******************************************************************************************************************************************************************
+Practical:06
+
+YELLOW DATASET-saurabh singh · Updated 8 years ago
+******************************************************************************************************************************************
+Data Analytics III
+1. Implement Simple Naïve Bayes classification algorithm using Python/R on iris.csv dataset.
+2. Compute Confusion matrix to find TP, FP, TN, FN, Accuracy, Error rate, Precision, Recall
+on the given dataset.
+********************************************************************************************************************
+CODE:
+
+import pandas as pd
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+import seaborn as sns
+
+from sklearn.metrics import accuracy_score
+
+from sklearn.datasets import load_iris
+
+from sklearn.model_selection import train_test_split
+
+from sklearn.naive_bayes import GaussianNB
+
+iris=load_iris()
+
+data = pd.read_csv("D:/Downloads/archive (4)/Iris.csv")
+
+data
+
+data.isnull().sum()
+
+x=iris.data
+
+y=iris.target
+
+x = data.drop(['Id', 'Species'], axis=1)
+y = data['Species']
+
+print(x)
+print(y)
+print(x.shape)
+print(y.shape)
+
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+
+print(x_train.shape)
+
+print(x_test.shape)
+
+print(y_train.shape)
+
+print(y_test.shape)
+
+
+from sklearn.naive_bayes import GaussianNB
+
+model = GaussianNB()
+model.fit(x_train, y_train)
+
+
+y_pred = model.predict(x_test)
+model.score(x_test,y_test)
+
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+
+print(accuracy_score(y_test, y_pred))
+
+cm = confusion_matrix(y_test, y_pred)
+disp = ConfusionMatrixDisplay(confusion_matrix = cm)
+print("Confusion matrix:")
+print(cm)
+
+
+disp.plot()
+plt.show()
+
+
+def get_confusion_matrix_values(y_true, y_pred):
+    cm = confusion_matrix(y_true, y_pred)
+    return (cm[0][0], cm[0][1], cm[1][0], cm[1][1])
+
+TP, FP, FN, TN = get_confusion_matrix_values(y_test, y_pred)
+
+print("TP:", TP)
+print("FP:", FP)
+print("FN:", FN)
+print("TN:", TN)
+
+
+print("The Accuracy is ", (TP+TN)/(TP+TN+FP+FN))
+print("The precision is ", TP/(TP+FP))
+print("Error Rate:",1-(TP+TN)/(TP+TN+FP+FN))
+print("The recall is ", TP/(TP+FN))
+*****************************************************************************************************************************************
+Practical:07
+**********************************************************************************************
+
+Text Analytics
+1. Extract Sample document and apply following document preprocessing methods:
+Tokenization, POS Tagging, stop words removal, Stemming and Lemmatization.
+2. Create representation of document by calculating Term Frequency and Inverse Document
+Frequency
+********************************************************************************************************************
+CODE:
+
+
+import nltk
+import re
+import pandas as pd
+import math
+
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('punkt_tab')
+nltk.download('averaged_perceptron_tagger_eng')
+
+text = """Tokenization is the first step in text analytics. 
+The process of breaking down a text paragraph into smaller chunks such 
+as words or sentences is called Tokenization."""
+
+sentences = sent_tokenize(text)
+print("Sentences:\n", sentences)
+
+
+words = word_tokenize(text)
+print("\nWords:\n", words)
+
+
+stop_words = set(stopwords.words("english"))
+
+text2 = "How to remove stop words with NLTK library in Python?"
+text2 = re.sub('[^a-zA-Z]', ' ', text2)
+
+tokens = word_tokenize(text2.lower())
+filtered = [w for w in tokens if w not in stop_words]
+
+print("\nTokenized:", tokens)
+print("Filtered:", filtered)
+
+ps = PorterStemmer()
+e_words = ["wait", "waiting", "waited", "waits"]
+
+print("\nStemming:")
+for w in e_words:
+    print(w, "->", ps.stem(w))
+
+lemmatizer = WordNetLemmatizer()
+text3 = "studies studying cries cry"
+
+print("\nLemmatization:")
+for w in word_tokenize(text3):
+    print(w, "->", lemmatizer.lemmatize(w))
+
+data = "The pink sweater fit her perfectly"
+words = word_tokenize(data)
+
+
+print("\nPOS Tagging:")
+for word in words:
+    print(nltk.pos_tag([word]))
+
+documentA = 'Jupiter is the largest Planet'
+documentB = 'Mars is the fourth planet from the Sun'
+
+bagA = documentA.split()
+bagB = documentB.split()
+
+uniqueWords = set(bagA).union(set(bagB))
+
+numA = dict.fromkeys(uniqueWords, 0)
+for word in bagA:
+    numA[word] += 1
+
+numB = dict.fromkeys(uniqueWords, 0)
+for word in bagB:
+    numB[word] += 1
+
+def computeTF(wordDict, bag):
+    tfDict = {}
+    total = len(bag)
+    for word, count in wordDict.items():
+        tfDict[word] = count / total
+    return tfDict
+
+tfA = computeTF(numA, bagA)
+tfB = computeTF(numB, bagB)
+
+def computeIDF(documents):
+    import math
+    N = len(documents)
+    
+    idfDict = dict.fromkeys(documents[0].keys(), 0)
+
+def computeIDF(documents):
+    N = len(documents)
+    idfDict = dict.fromkeys(documents[0].keys(), 0)
+    for doc in documents:
+        for word, val in doc.items():
+            if val > 0:
+                idfDict[word] += 1
+    for word, val in idfDict.items():
+        idfDict[word] = math.log(N / float(val), 10)
+    return idfDict
+
+
+idfs = computeIDF([numA, numB])
+
+def computeTFIDF(tf, idfs):
+    tfidf = {}
+    for word, val in tf.items():
+        tfidf[word] = val * idfs[word]
+    return tfidf
+
+tfidfA = computeTFIDF(tfA, idfs)
+tfidfB = computeTFIDF(tfB, idfs)
+
+
+df = pd.DataFrame([tfidfA, tfidfB])
+print("\nTF-IDF Matrix:\n")
+print(df)
+**************************************************************************************************************************************************
+Practical:08
+
+priyanka Kukunuru · Updated 9 years ago
+**************************************************************************************************************************************************
+Data Visualization I
+1. Use the inbuilt dataset 'titanic'. The dataset contains 891 rows and contains information
+about the passengers who boarded the unfortunate Titanic ship. Use the Seaborn library to
+see if we can find any patterns in the data.
+2. Write a code to check how the price of the ticket (column name: 'fare') for each passenger
+is distributed by plotting a histogram.
+**************************************************************************************************************************************************
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+titanic = pd.read_csv('titanic_data.csv')
+# if we have to use inbuilt dataset then change this line and write titanic = sns.load_dataset('titanic')
+# and change the column names where ever written and put its first letter small
+
+
+print(titanic.head())
+
+print(titanic.info())
+
+sns.countplot(x='Survived', data=titanic)
+plt.title("Survival Count")
+plt.show()
+
+sns.countplot(x='Sex', hue='Survived', data=titanic)
+plt.title("Survival by Gender")
+plt.show()
+
+sns.countplot(x='Pclass', hue='Survived', data=titanic)
+plt.title("Survival by Passenger Class")
+plt.show()
+
+sns.histplot(titanic['Age'].dropna(), bins=30 , kde=True)
+plt.title("Age Distribution")
+plt.show()
+
+sns.histplot(titanic['Fare'], bins=30 , kde=True)
+plt.title("Fare Distribution")
+plt.xlabel("Fare")
+plt.ylabel("Count")
+plt.show()
+
+
+sns.boxplot(x='Survived', y='Fare', data=titanic)
+plt.title("Fare vs Survival")
+plt.show()
+titanic
+*************************************************************************************************************************************************
+Practical:09
+priyanka Kukunuru · Updated 9 years ago
+***************************************************************************************************************
+Data Visualization II
+1. Use the inbuilt dataset 'titanic' as used in the above problem. Plot a box plot for distribution
+of age with respect to each gender along with the information about whether they survived
+or not. (Column names : 'sex' and 'age')
+2. Write observations on the inference from the above statistics.
+*************************************************************************************************************
+
+CODE:
+
+import pandas as pd
+
+import seaborn as sns
+
+import matplotlib.pyplot as plt
+
+data = sns.load_dataset("titanic")  (if dataset is inbuilt use this line)
+data = pd.read_csv("D:/Downloads/archive (5)/titanic_data.csv") (use this line if when we copying path of xcel file)
+
+print(data.head())
+
+print(data[['sex','age','survived']].head())
+
+data=data.dropna(subset=['age'])
+
+plt.figure(figsize=(8,6))
+
+
+plt.figure(figsize=(8,6))
+sns.boxplot(x="sex", y="age", hue="survived", data=data)
+
+plt.title("Age distribution by gender and survival")
+plt.xlabel("Gender")
+plt.ylabel("Age")
+
+plt.show()
+*********************************************************************************************************************
+Practical:10
+*********************************************************************************************************************
+Data Visualization III
+Download the Iris flower dataset or any other dataset into a DataFrame. (e.g.,
+https://archive.ics.uci.edu/ml/datasets/Iris ). Scan the dataset and give the inference as:
+1. List down the features and their types (e.g., numeric, nominal) available in the dataset.
+2. Create a histogram for each feature in the dataset to illustrate the feature distributions.
+3. Create a boxplot for each feature in the dataset.
+4. Compare distributions and identify outliers
+*****************************************************************************************************************************
+CODE:
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.set(style="whitegrid")
+
+iris = pd.read_csv("/content/Iris.csv")
+
+print(iris.head())
+
+print("\n-----------------------------")
+print("Dataset Information")
+print("-----------------------------")
+
+print("Shape of dataset:", iris.shape)
+
+print("\nColumns in dataset:")
+print(iris.columns)
+
+print("\nData Types:")
+print(iris.dtypes)
+
+print("\nMissing Values:")
+print(iris.isnull().sum())
+
+print("\n-----------------------------")
+print("Statistical Summary")
+print("-----------------------------")
+
+print(iris.describe())
+
+print("\n-----------------------------")
+print("Features and Their Types")
+print("-----------------------------")
+
+feature_types = {}
+
+for col in iris.columns:
+    if iris[col].dtype == 'object':
+       feature_types[col] = "Nominal (Categorical)"
+    else:
+       feature_types[col] = "Numeric" 
+
+for feature, ftype in feature_types.items():
+    print(f"{feature} → {ftype}")
+
+print("\n-----------------------------")
+print("Histogram Visualization")
+print("-----------------------------")
+
+for col in iris.columns[:-1]:
+    plt.figure(figsize=(6,4))
+
+sns.histplot(iris[col], kde=True, bins=20)
+
+plt.title(f"Histogram of {col}")
+plt.xlabel(col)
+plt.ylabel("Frequency")
+
+plt.show()
+
+iris.hist(figsize=(12,8))
+
+plt.suptitle("Combined Histograms of Iris Features", fontsize=16)
+
+print("\n-----------------------------")
+print("Boxplot Visualization")
+print("-----------------------------")
+
+for col in iris.columns[:-1]:
+    plt.figure(figsize=(6,4))
+    sns.boxplot(y=iris[col])
+    plt.title(f"Boxplot of {col}")
+    plt.show()
+
+plt.figure(figsize=(10,6))
+sns.boxplot(data=iris)
+plt.title("Combined Boxplot of All Features")
+plt.show()
+
+for col in iris.columns[:-1]:
+    plt.figure(figsize=(6,4))
+    sns.boxplot(x="Species", y=col, data=iris)
+    plt.title(f"{col} vs Species")
+    plt.show()
+
+print("\n-----------------------------")
+print("Outlier Detection using IQR Method")
+print("-----------------------------")
+
+for col in iris.columns[:-1]:
+    Q1 = iris[col].quantile(0.25)
+    Q3 = iris[col].quantile(0.75)
+    IQR = Q3-Q1
+
+lower_bound = Q1-1.5 * IQR
+upper_bound = Q3 + 1.5 * IQR
+
+outliers = iris[(iris[col] < lower_bound) | (iris[col] > upper_bound)]
+
+print(f"\nFeature: {col}")
+print(f"Number of outliers: {len(outliers)}")
+
+print("\n-----------------------------")
+print("Distribution Comparison")
+print("-----------------------------")
+
+for col in iris.columns[:-1]:
+    print(f"\nFeature: {col}")
+    print(f"Mean: {iris[col].mean():.2f}")
+    print(f"Median: {iris[col].median():.2f}")
+    print(f"Standard Deviation: {iris[col].std():.2f}")
+*************************************************************************************************************************************************
+GROUP:B
+*************************************
+WORD COUNT PROGRAM:
+****************************************
+#!/bin/bash
+
+set -e
+
+#==============================
+# Hadoop WordCount Automation
+#==============================
+echo "[+] Installing Java (OpenJDK 8)..."
+sudo apt update && sudo apt install -y openjdk-8-jdk ssh wget tar
+
+#==============================
+# Setup SSH for localhost
+#==============================
+echo "[+] Configuring SSH for passwordless access..."
+ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# Allow SSH to localhost
+ssh -o StrictHostKeyChecking=no localhost "echo SSH configured"
+
+#==============================
+# Download & Install Hadoop
+#==============================
+cd ~
+echo "[+] Downloading Hadoop 2.7.7..."
+wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.7/hadoop-2.7.7.tar.gz
+tar -xzf hadoop-2.7.7.tar.gz
+mv hadoop-2.7.7 hadoop
+
+#==============================
+# Set Hadoop Environment Variables
+#==============================
+echo "[+] Configuring environment variables..."
+cat <<EOL >> ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export HADOOP_HOME=\$HOME/hadoop
+export PATH=\$PATH:\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin
+export HADOOP_CONF_DIR=\$HADOOP_HOME/etc/hadoop
+EOL
+
+# Export immediately for current shell
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export HADOOP_HOME=$HOME/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+#==============================
+# Configure Hadoop Files
+#==============================
+echo "[+] Configuring Hadoop XML files..."
+
+cat > $HADOOP_CONF_DIR/core-site.xml <<EOL
+<configuration>
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://localhost:9000</value>
+  </property>
+</configuration>
+EOL
+
+cat > $HADOOP_CONF_DIR/hdfs-site.xml <<EOL
+<configuration>
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+  </property>
+</configuration>
+EOL
+
+cp $HADOOP_CONF_DIR/mapred-site.xml.template $HADOOP_CONF_DIR/mapred-site.xml
+cat > $HADOOP_CONF_DIR/mapred-site.xml <<EOL
+<configuration>
+  <property>
+    <name>mapreduce.framework.name</name>
+    <value>yarn</value>
+  </property>
+</configuration>
+EOL
+
+cat > $HADOOP_CONF_DIR/yarn-site.xml <<EOL
+<configuration>
+  <property>
+    <name>yarn.resourcemanager.hostname</name>
+    <value>localhost</value>
+  </property>
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+  </property>
+</configuration>
+EOL
+
+sed -i "s|export JAVA_HOME=.*|export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64|" $HADOOP_CONF_DIR/hadoop-env.sh
+
+#==============================
+# Format Namenode & Start Hadoop
+#==============================
+echo "[+] Formatting HDFS..."
+hdfs namenode -format
+
+echo "[+] Starting Hadoop daemons..."
+start-dfs.sh
+start-yarn.sh
+sleep 10
+
+#==============================
+# Create WordCount Java File
+#==============================
+echo "[+] Creating WordCount.java..."
+mkdir -p ~/wordcount
+cat > ~/wordcount/WordCount.java <<EOL
+import java.io.IOException;
+import java.util.StringTokenizer;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class WordCount {
+  public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+    public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
+      StringTokenizer itr = new StringTokenizer(value.toString());
+      while (itr.hasMoreTokens()) {
+        word.set(itr.nextToken());
+        context.write(word, one);
+      }
+    }
+  }
+  public static class IntSumReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+    public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+      int sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+      context.write(key, new IntWritable(sum));
+    }
+  }
+  public static void main(String[] args) throws Exception {
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf, "word count");
+    job.setJarByClass(WordCount.class);
+    job.setMapperClass(TokenizerMapper.class);
+    job.setCombinerClass(IntSumReducer.class);
+    job.setReducerClass(IntSumReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+  }
+}
+EOL
+
+#==============================
+# Compile Java & Create JAR
+#==============================
+echo "[+] Compiling WordCount.java..."
+mkdir -p ~/wordcount/classes
+javac -classpath `hadoop classpath` -d ~/wordcount/classes ~/wordcount/WordCount.java
+jar -cvf ~/wordcount/wordcount.jar -C ~/wordcount/classes/ .
+
+#==============================
+# Create Input & Run Job
+#==============================
+echo "[+] Creating sample input..."
+echo "Hello Hadoop Hello MapReduce Hadoop" > ~/wordcount/input.txt
+hdfs dfs -mkdir -p /wordcount/input
+hdfs dfs -put -f ~/wordcount/input.txt /wordcount/input
+
+#==============================
+# Run MapReduce WordCount Job
+#==============================
+echo "[+] Running WordCount job..."
+hadoop jar ~/wordcount/wordcount.jar WordCount /wordcount/input /wordcount/output
+
+#==============================
+# View Output
+#==============================
+echo "[+] Job Output:"
+hdfs dfs -cat /wordcount/output/part-r-00000
+
+echo "========== SCRIPT COMPLETED SUCCESSFULLY =========="
+***************************************************************************************************************************
+WORDCOUNT PROGRAM :02
+******************************************************************************************************************************
+package com.mr.wordcount;
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.*;
+import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+public class WordCount {
+ public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
+ private final static IntWritable one = new IntWritable(1);
+ private final Text word = new Text();
+ public void map(LongWritable key, Text value, Context ctx) throws IOException, InterruptedException {
+ for (String s : value.toString().split("\\s+")) {
+ if (s.isEmpty()) continue;
+ word.set(s);
+ ctx.write(word, one);
+ }
+ }
+ }
+ public static class Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
+ public void reduce(Text key, Iterable<IntWritable> values, Context ctx) throws IOException,
+InterruptedException {
+ int sum = 0;
+ for (IntWritable val : values) sum += val.get();
+ ctx.write(key, new IntWritable(sum));
+ }
+ }
+ public static void main(String[] args) throws Exception {
+ Job job = Job.getInstance(new Configuration(), "word count");
+ job.setJarByClass(WordCount.class);
+
+ job.setMapperClass(Map.class);
+ job.setCombinerClass(Reduce.class);
+ job.setReducerClass(Reduce.class);
+ job.setOutputKeyClass(Text.class);
+ job.setOutputValueClass(IntWritable.class);
+ FileInputFormat.addInputPath(job, new Path(args[0]));
+ FileOutputFormat.setOutputPath(job, new Path(args[1]));
+ System.exit(job.waitForCompletion(true) ? 0 : 1);
+ }
+}
+
+
+
+
+
