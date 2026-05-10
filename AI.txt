@@ -1,0 +1,1776 @@
+ARTIFICIAL INTELLIGENCE
+************************************************************************
+Practical No:01
+************************************************************************
+Implement depth first search algorithm and Breadth First Search algorithm, Use an undirected
+graph and develop a recursive algorithm for searching all the vertices of a graph or tree data
+structure. 
+
+Prolog Code:
+***********************************************************************************************
+% Undirected Graph
+edge(a,b).
+edge(a,c).
+edge(b,d).
+edge(b,e).
+edge(c,f).
+edge(c,g).
+edge(d,h).
+edge(e,i).
+edge(e,j).
+edge(f,k).
+
+% Make Graph undirected
+connected(X,Y):- edge(X,Y).
+connected(X,Y):- edge(Y,X).
+
+% DFS main predicate
+dfs(Start):-
+    dfs(Start, []).
+
+% Recursive DFS
+dfs(Node, Visited):-
+    \+ member(Node, Visited),
+    write(Node), write(' '),
+    dfs_neighbour(Node, [Node|Visited]).
+
+% Visit neighbours
+dfs_neighbour(Node, Visited):-
+    connected(Node, Next),
+    dfs(Next, Visited),
+    fail.
+dfs_neighbour(_, _).
+
+% BFS main predicate
+bfs(Start):-
+    bfs_queue([Start], []).
+
+bfs_queue([], _).
+
+bfs_queue([Node|Rest], Visited):-
+    member(Node, Visited),
+    bfs_queue(Rest, Visited).
+
+bfs_queue([Node|Rest], Visited):-
+    \+ member(Node, Visited),
+    write(Node), write(' '),
+    findall(Next,
+        (connected(Node, Next),
+        \+ member(Next, Visited)),
+        Neighbours),
+    append(Rest, Neighbours, NewQueue),
+    bfs_queue(NewQueue, [Node|Visited]).
+
+
+Output:
+***************
+10 ?- dfs(a).
+a b d h e i j c f k g 
+true.
+
+11 ?- bfs(a).
+a b c d e f g h i j k 
+true
+**************************************************************************
+Python Code:
+**************************************************************************
+CODE FOR DFS:
+***************************************************************************
+        A
+       / \
+      B   C
+       \ /
+        D
+***********************************************
+Start at A
+|
+|-- Go to B
+|     |
+|     |-- Go to D
+|            |
+|            |-- Go to C
+****************************************************
+# DFS using recursion
+
+def dfs(node, visited, graph):
+    if node not in visited:
+        print(node, end=' ')
+        visited.add(node)
+
+        for neighbor in graph[node]:
+            dfs(neighbor, visited, graph)
+
+
+# Create graph
+graph = {}
+
+# Number of vertices
+n = int(input("Enter number of vertices: "))
+
+print()
+
+# Input adjacency list style graph
+for i in range(n):
+
+    vertex = input("Enter vertex name: ")
+    neighbors = input(f"Enter neighbours of {vertex} separated by space: ").split()
+
+    graph[vertex] = neighbors
+
+
+print()
+
+# Starting node
+start = input("Enter starting vertex: ")
+
+visited = set()
+
+print("\nDFS Traversal:")
+dfs(start, visited, graph)
+***********************************************************
+OUTPUT:
+**************************************************************
+Enter number of vertices: 4
+
+Enter vertex name: A
+Enter neighbours of A separated by space: B C
+Enter vertex name: B
+Enter neighbours of B separated by space: A D
+Enter vertex name: C
+Enter neighbours of C separated by space: A D
+Enter vertex name: D
+Enter neighbours of D separated by space: B C
+
+Enter starting vertex: A
+
+DFS Traversal:
+A B D C 
+***********************************************************************
+CODE FOR BFS :
+**********************************************************************
+
+Level 0:        A
+               / \
+Level 1:      B   C
+               \ /
+Level 2:        D
+*************************************************************************
+from collections import deque
+
+# BFS function
+def bfs(start, graph):
+    visited = set()
+    queue = deque()
+
+    queue.append(start)
+    visited.add(start)
+
+    while queue:
+        node = queue.popleft()
+        print(node, end=' ')
+
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+
+# Create graph
+graph = {}
+
+# Number of vertices
+n = int(input("Enter number of vertices: "))
+
+print()
+
+# Input adjacency list style graph
+for i in range(n):
+
+    vertex = input("Enter vertex name: ")
+    neighbors = input(f"Enter neighbours of {vertex} separated by space: ").split()
+
+    graph[vertex] = neighbors
+
+
+print()
+
+# Starting node
+start = input("Enter starting vertex: ")
+
+print("\nBFS Traversal:")
+bfs(start, graph)
+*******************************************************************
+OUTPUT:
+*******************************************
+Enter number of vertices: 4
+
+Enter vertex name: A
+Enter neighbours of A separated by space: B C
+Enter vertex name: B
+Enter neighbours of B separated by space: A D
+Enter vertex name: C
+Enter neighbours of C separated by space: A D
+Enter vertex name: D
+Enter neighbours of D separated by space: B C
+
+Enter starting vertex: A
+
+BFS Traversal:
+A B C D 
+***********************************************************************************************************
+PRACTICAL:02
+***********************************************************************************************************
+# A* Algorithm for 8 Puzzle using User Input
+
+from heapq import heappush, heappop
+
+# Goal State
+GOAL = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 0]
+]
+
+# Heuristic Function (Manhattan Distance)
+def heuristic(state):
+    distance = 0
+
+    for i in range(3):
+        for j in range(3):
+
+            value = state[i][j]
+
+            if value != 0:
+                goal_x = (value - 1) // 3
+                goal_y = (value - 1) % 3
+
+                distance += abs(goal_x - i) + abs(goal_y - j)
+
+    return distance
+
+# Find blank tile position
+def find_blank(state):
+
+    for i in range(3):
+        for j in range(3):
+
+            if state[i][j] == 0:
+                return i, j
+
+# Generate neighbors
+def get_neighbors(state):
+
+    neighbors = []
+
+    x, y = find_blank(state)
+
+    directions = [(-1,0), (1,0), (0,-1), (0,1)]
+
+    for dx, dy in directions:
+
+        nx, ny = x + dx, y + dy
+
+        if 0 <= nx < 3 and 0 <= ny < 3:
+
+            new_state = [row[:] for row in state]
+
+            # Swap
+            new_state[x][y], new_state[nx][ny] = (
+                new_state[nx][ny],
+                new_state[x][y]
+            )
+
+            neighbors.append(new_state)
+
+    return neighbors
+
+# Convert to tuple
+def state_to_tuple(state):
+    return tuple(tuple(row) for row in state)
+
+# A* Algorithm
+def astar(start):
+
+    pq = []
+
+    heappush(pq, (heuristic(start), 0, start, []))
+
+    visited = set()
+
+    while pq:
+
+        f, g, current, path = heappop(pq)
+
+        if current == GOAL:
+            return path + [current]
+
+        current_tuple = state_to_tuple(current)
+
+        if current_tuple in visited:
+            continue
+
+        visited.add(current_tuple)
+
+        for neighbor in get_neighbors(current):
+
+            neighbor_tuple = state_to_tuple(neighbor)
+
+            if neighbor_tuple not in visited:
+
+                new_g = g + 1
+                new_f = new_g + heuristic(neighbor)
+
+                heappush(
+                    pq,
+                    (new_f, new_g, neighbor, path + [current])
+                )
+
+    return None
+
+# USER INPUT
+print("Enter the initial state row by row")
+print("Use space between numbers")
+print("Use 0 for blank tile\n")
+
+start_state = []
+
+for i in range(3):
+
+    row = list(map(int, input(f"Enter row {i+1}: ").split()))
+
+    start_state.append(row)
+
+# Run A*
+solution = astar(start_state)
+
+# Display Result
+if solution:
+
+    print("\nSolution Found!\n")
+
+    step = 0
+
+    for state in solution:
+
+        print("Step", step)
+
+        for row in state:
+            print(row)
+
+        print()
+
+        step += 1
+
+else:
+    print("No solution found.")
+******************************************************************************************************
+OUTPUT:
+******************************************************************************************************
+Enter the initial state row by row
+Use space between numbers
+Use 0 for blank tile
+
+Enter row 1: 1 2 3
+Enter row 2: 4 0 6
+Enter row 3: 7 5 8
+
+Solution Found!
+
+Step 0
+[1, 2, 3]
+[4, 0, 6]
+[7, 5, 8]
+
+Step 1
+[1, 2, 3]
+[4, 5, 6]
+[7, 0, 8]
+
+Step 2
+[1, 2, 3]
+[4, 5, 6]
+[7, 8, 0]
+
+PS C:\Users\Asus\Desktop\AI_Prac>
+************************************************************************************************
+Start
+ |
+ |-- Step 0
+ |     1 2 3
+ |     4 0 6
+ |     7 5 8
+ |
+ |-- Move Down
+ |     Step 1
+ |     1 2 3
+ |     4 5 6
+ |     7 0 8
+ |
+ |-- Move Right
+       Step 2 (Goal)
+       1 2 3
+       4 5 6
+       7 8 0
+*******************************************************************************
+PRACTICAL NO:03
+************************************************************************************
+3. Implement Greedy search algorithm for any of the following application:
+**********************************************************************************************
+I. Selection Sort
+******************************************************************************
+code:
+# Selection Sort using Greedy Method
+
+# Taking user input
+n = int(input("Enter number of elements: "))
+
+arr = []
+
+for i in range(n):
+    num = int(input("Enter element: "))
+    arr.append(num)
+
+# Selection Sort
+for i in range(n):
+
+    min_index = i
+
+    for j in range(i + 1, n):
+
+        if arr[j] < arr[min_index]:
+            min_index = j
+
+    # Swap elements
+    arr[i], arr[min_index] = arr[min_index], arr[i]
+
+# Display sorted array
+print("\nSorted Array:")
+print(arr)
+****************************************************************
+user input :
+***********************************
+Enter number of elements: 5
+Enter element: 64
+Enter element: 25
+Enter element: 12
+Enter element: 22
+Enter element: 11
+**************************************
+output:
+**********************************************
+Sorted Array:
+[11, 12, 22, 25, 64]
+***************************************************************************************************
+II. Minimum Spanning Tree
+*************************************************************************************************
+CODE:
+
+# Minimum Spanning Tree (MST)
+
+# User Input
+n = int(input("Enter number of vertices: "))
+
+graph = []
+
+print("Enter adjacency matrix:")
+
+for i in range(n):
+    row = list(map(int, input().split()))
+    graph.append(row)
+
+selected = [False] * n
+
+selected[0] = True
+
+edge_count = 0
+total_cost = 0
+
+print("\nEdges in Minimum Spanning Tree:\n")
+
+while edge_count < n - 1:
+
+    minimum = 999999
+    x = 0
+    y = 0
+
+    for i in range(n):
+
+        if selected[i]:
+
+            for j in range(n):
+
+                if (not selected[j]) and graph[i][j]:
+
+                    if minimum > graph[i][j]:
+                        minimum = graph[i][j]
+                        x = i
+                        y = j
+
+    print(x, "-", y, "=", graph[x][y])
+
+    total_cost += graph[x][y]
+
+    selected[y] = True
+    edge_count += 1
+
+print("\nTotal Cost =", total_cost)
+********************************************************************************************************
+OUTPUT:
+***********************************************************************************************************
+Enter number of vertices: 4
+Enter adjacency matrix:
+0 2 0 6
+2 0 3 8
+0 3 0 0
+6 8 0 0
+
+Edges in Minimum Spanning Tree:
+
+0 - 1 = 2
+1 - 2 = 3
+0 - 3 = 6
+
+Total Cost = 11
+**************************************************************************************************************
+III. Single-Source Shortest Path Problem
+******************************************************************************
+Code:
+
+# Single Source Shortest Path using Dijkstra Algorithm
+# Displays shortest path and distance
+
+import heapq
+
+# Number of vertices
+n = int(input("Enter number of vertices: "))
+
+# Number of edges
+e = int(input("Enter number of edges: "))
+
+# Graph
+graph = {}
+
+for i in range(n):
+    graph[i] = []
+
+# Input edges
+print("\nEnter edges in format: source destination weight")
+
+for i in range(e):
+
+    u, v, w = map(int, input().split())
+
+    graph[u].append((v, w))
+    graph[v].append((u, w))   # Remove for directed graph
+
+# Source vertex
+source = int(input("\nEnter source vertex: "))
+
+# Dijkstra Algorithm
+distance = [float('inf')] * n
+parent = [-1] * n
+
+distance[source] = 0
+
+priority_queue = []
+
+heapq.heappush(priority_queue, (0, source))
+
+while priority_queue:
+
+    current_distance, current_vertex = heapq.heappop(priority_queue)
+
+    for neighbor, weight in graph[current_vertex]:
+
+        new_distance = current_distance + weight
+
+        if new_distance < distance[neighbor]:
+
+            distance[neighbor] = new_distance
+
+            parent[neighbor] = current_vertex
+
+            heapq.heappush(
+                priority_queue,
+                (new_distance, neighbor)
+            )
+
+# Function to print path
+def get_path(vertex):
+
+    path = []
+
+    while vertex != -1:
+        path.append(vertex)
+        vertex = parent[vertex]
+
+    path.reverse()
+
+    return path
+
+# Output
+print("\nShortest Paths from Source Vertex", source)
+
+for vertex in range(n):
+
+    print("\nVertex:", vertex)
+
+    print("Shortest Distance:", distance[vertex])
+
+    print("Shortest Path:", " -> ".join(map(str, get_path(vertex))))
+**************************************************************************************************
+output:
+*******************************************************************************
+Enter number of vertices: 5
+Enter number of edges: 6
+
+Enter edges in format: source destination weight
+0 1 2
+0 2 4
+1 2 1 
+1 3 7
+2 4 3
+3 4 1
+
+Enter source vertex: 0
+
+Shortest Paths from Source Vertex 0
+
+Vertex: 0
+Shortest Distance: 0
+Shortest Path: 0
+
+Vertex: 1
+Shortest Distance: 2
+Shortest Path: 0 -> 1
+
+Vertex: 2
+Shortest Distance: 3
+Shortest Path: 0 -> 1 -> 2
+
+Vertex: 3
+Shortest Distance: 7
+Shortest Path: 0 -> 1 -> 2 -> 4 -> 3
+
+Vertex: 4
+Shortest Distance: 6
+Shortest Path: 0 -> 1 -> 2 -> 4
+PS C:\Users\Asus\Desktop\AI_Prac>
+***************************************************************************************
+IV. Job Scheduling Problem
+****************************************************************************************
+CODE:
+
+# Job Scheduling Problem using Greedy Method
+# User Input
+
+# Number of jobs
+n = int(input("Enter number of jobs: "))
+
+jobs = []
+
+print("\nEnter Job Details")
+
+# Input format:
+# Job ID, Deadline, Profit
+
+for i in range(n):
+
+    job_id = input("Enter Job ID: ")
+
+    deadline = int(input("Enter Deadline: "))
+
+    profit = int(input("Enter Profit: "))
+
+    jobs.append((job_id, deadline, profit))
+
+# Sort jobs according to profit in descending order
+jobs.sort(key=lambda x: x[2], reverse=True)
+
+# Find maximum deadline
+max_deadline = max(jobs, key=lambda x: x[1])[1]
+
+# Create slots
+slots = [-1] * max_deadline
+
+total_profit = 0
+
+# Perform scheduling
+for job in jobs:
+
+    job_id, deadline, profit = job
+
+    # Check slots from deadline-1 to 0
+    for j in range(deadline - 1, -1, -1):
+
+        if slots[j] == -1:
+
+            slots[j] = job_id
+
+            total_profit += profit
+
+            break
+
+# Output
+print("\nScheduled Jobs:")
+
+for i in range(len(slots)):
+
+    if slots[i] != -1:
+        print("Slot", i + 1, "->", slots[i])
+
+print("\nMaximum Profit:", total_profit)
+************************************************************************************
+OUTPUT:
+********************************************************************************
+Enter number of jobs: 4
+
+Enter Job Details
+Enter Job ID: J1
+Enter Deadline: 2
+Enter Profit: 100
+Enter Job ID: J2
+Enter Deadline: 1
+Enter Profit: 19
+Enter Job ID: J3
+Enter Deadline: 2
+Enter Profit: 27
+Enter Job ID: J4
+Enter Deadline: 1
+Enter Profit: 25
+
+Scheduled Jobs:
+Slot 1 -> J3
+Slot 2 -> J1
+
+Maximum Profit: 127
+PS C:\Users\Asus\Desktop\AI_Prac>
+*************************************************************************************************
+V. Prim's Minimal Spanning Tree Algorithm
+*************************************************************************************************
+CODE:
+
+# Prim's Minimum Spanning Tree Algorithm
+
+INF = 999999
+
+# User Input
+n = int(input("Enter number of vertices: "))
+
+# Adjacency Matrix
+graph = []
+
+print("Enter adjacency matrix:")
+for i in range(n):
+    row = list(map(int, input().split()))
+    graph.append(row)
+
+selected = [False] * n
+
+selected[0] = True
+
+print("\nEdges in Minimum Spanning Tree:\n")
+
+edge_count = 0
+total_cost = 0
+
+while edge_count < n - 1:
+
+    minimum = INF
+    x = 0
+    y = 0
+
+    for i in range(n):
+        if selected[i]:
+            for j in range(n):
+                if (not selected[j]) and graph[i][j]:
+                    if minimum > graph[i][j]:
+                        minimum = graph[i][j]
+                        x = i
+                        y = j
+
+    print(x, "-", y, "=", graph[x][y])
+
+    total_cost += graph[x][y]
+
+    selected[y] = True
+    edge_count += 1
+
+print("\nTotal Cost =", total_cost)
+**********************************************************************************************************************
+OUTPUT:
+
+PS C:\Users\apekh> & C:/Python314/python.exe d:/Downloads/prims_algo.py
+Enter number of vertices: 4
+Enter adjacency matrix:
+0 2 0 6
+2 0 3 8
+0 3 0 0
+6 8 0 0
+
+Edges in Minimum Spanning Tree:
+
+0 - 1 = 2
+1 - 2 = 3
+0 - 3 = 6
+
+Total Cost = 11
+PS C:\Users\apekh>
+************************************************************************************************
+VI. Kruskal's Minimal Spanning Tree Algorithm
+**************************************************************************************************
+CODE:
+
+# Kruskal's Minimum Spanning Tree Algorithm
+
+# Find Parent
+def find(parent, i):
+    if parent[i] == i:
+        return i
+    return find(parent, parent[i])
+
+# Union of sets
+def union(parent, rank, x, y):
+
+    xroot = find(parent, x)
+    yroot = find(parent, y)
+
+    if rank[xroot] < rank[yroot]:
+        parent[xroot] = yroot
+
+    elif rank[xroot] > rank[yroot]:
+        parent[yroot] = xroot
+
+    else:
+        parent[yroot] = xroot
+        rank[xroot] += 1
+
+
+# User Input
+vertices = int(input("Enter number of vertices: "))
+edges = int(input("Enter number of edges: "))
+
+graph = []
+
+print("Enter edges in format: source destination weight")
+
+for i in range(edges):
+    u, v, w = map(int, input().split())
+    graph.append([u, v, w])
+
+# Sort edges by weight
+graph = sorted(graph, key=lambda item: item[2])
+
+parent = []
+rank = []
+
+for node in range(vertices):
+    parent.append(node)
+    rank.append(0)
+
+result = []
+e = 0
+i = 0
+total_cost = 0
+
+# Kruskal Algorithm
+while e < vertices - 1:
+
+    u, v, w = graph[i]
+    i += 1
+
+    x = find(parent, u)
+    y = find(parent, v)
+
+    if x != y:
+        e += 1
+        result.append([u, v, w])
+        total_cost += w
+        union(parent, rank, x, y)
+
+# Output
+print("\nEdges in Minimum Spanning Tree:\n")
+
+for u, v, weight in result:
+    print(u, "-", v, "=", weight)
+
+print("\nTotal Cost =", total_cost)
+***************************************************************************************************
+OUTPUT:
+*********************************************************
+PS C:\Users\apekh> & C:/Python314/python.exe d:/Downloads/kruskal.py
+Enter number of vertices: 4
+Enter number of edges: 5
+Enter edges in format: source destination weight
+0 1 2
+0 3 6
+1 2 3
+1 3 8
+2 3 7
+
+Edges in Minimum Spanning Tree:
+
+0 - 1 = 2
+1 - 2 = 3
+0 - 3 = 6
+
+Total Cost = 11
+PS C:\Users\apekh> 
+***************************************************************************
+VII. Dijkstra's Minimal Spanning Tree Algorithm
+*************************************************************************************
+CODE:
+
+# Dijkstra's Algorithm
+# Single Source Shortest Path
+# User Input
+
+import heapq
+
+# Number of vertices
+n = int(input("Enter number of vertices: "))
+
+# Number of edges
+e = int(input("Enter number of edges: "))
+
+# Graph
+graph = {}
+
+for i in range(n):
+    graph[i] = []
+
+# Input edges
+print("\nEnter edges in format: source destination weight")
+
+for i in range(e):
+
+    u, v, w = map(int, input().split())
+
+    graph[u].append((v, w))
+    graph[v].append((u, w))   # Remove for directed graph
+
+# Source vertex
+source = int(input("\nEnter source vertex: "))
+
+# Distance array
+distance = [float('inf')] * n
+
+# Parent array to store path
+parent = [-1] * n
+
+distance[source] = 0
+
+# Priority Queue
+pq = []
+
+heapq.heappush(pq, (0, source))
+
+# Dijkstra Algorithm
+while pq:
+
+    current_distance, current_vertex = heapq.heappop(pq)
+
+    for neighbor, weight in graph[current_vertex]:
+
+        new_distance = current_distance + weight
+
+        if new_distance < distance[neighbor]:
+
+            distance[neighbor] = new_distance
+
+            parent[neighbor] = current_vertex
+
+            heapq.heappush(pq, (new_distance, neighbor))
+
+# Function to get shortest path
+def get_path(v):
+
+    path = []
+
+    while v != -1:
+
+        path.append(v)
+
+        v = parent[v]
+
+    path.reverse()
+
+    return path
+
+# Output
+print("\nShortest Paths from Source Vertex", source)
+
+for vertex in range(n):
+
+    print("\nVertex:", vertex)
+
+    print("Shortest Distance:", distance[vertex])
+
+    print("Shortest Path:", " -> ".join(map(str, get_path(vertex))))
+************************************************************************************************************
+OUTPUT:
+**********************************************************
+Enter number of vertices: 5
+Enter number of edges: 6
+
+Enter edges in format: source destination weight
+0 1 2
+0 2 4
+1 2 1
+1 3 7
+2 4 3
+3 4 1
+
+Enter source vertex: 0
+******************************************************************
+Shortest Paths from Source Vertex 0
+
+Vertex: 0
+Shortest Distance: 0
+Shortest Path: 0
+
+Vertex: 1
+Shortest Distance: 2
+Shortest Path: 0 -> 1
+
+Vertex: 2
+Shortest Distance: 3
+Shortest Path: 0 -> 1 -> 2
+
+Vertex: 3
+Shortest Distance: 7
+Shortest Path: 0 -> 1 -> 2 -> 4 -> 3
+
+Vertex: 4
+Shortest Distance: 6
+Shortest Path: 0 -> 1 -> 2 -> 4
+PS C:\Users\Asus\Desktop\AI_Prac>
+******************************************************************************************
+GROUP B
+******************************************************************************************
+4. Implement a solution for a Constraint Satisfaction Problem using Branch and Bound and
+Backtracking for n-queens problem or a graph coloring problem.
+***********************************************************************************************
+
+N-QUEEN PROBLEM:
+*************************************************************************************************
+CODE:
+
+# Input board size
+n = int(input("Enter value of N: "))
+
+# Create chess board
+board = [["." for _ in range(n)] for _ in range(n)]
+
+# Print board
+def print_board():
+
+    print("\n".join([" ".join(row) for row in board]))
+    print("-" * 10)
+
+
+# Check safe position
+def is_safe(row, col):
+
+    # Check column
+    for i in range(row):
+
+        if board[i][col] == "Q":
+            return False
+
+    # Check left diagonal
+    i, j = row - 1, col - 1
+
+    while i >= 0 and j >= 0:
+
+        if board[i][j] == "Q":
+            return False
+
+        i -= 1
+        j -= 1
+
+    # Check right diagonal
+    i, j = row - 1, col + 1
+
+    while i >= 0 and j < n:
+
+        if board[i][j] == "Q":
+            return False
+
+        i -= 1
+        j += 1
+
+    return True
+
+
+# Backtracking function
+def solve(row):
+
+    # Base case
+    if row == n:
+
+        print("Solution Found:\n")
+
+        print_board()
+
+        return True
+
+    # Try all columns
+    for col in range(n):
+
+        print(f"Trying Row {row}, Col {col}")
+
+        if is_safe(row, col):
+
+            # Place queen
+            board[row][col] = "Q"
+
+            print(f"Placed Q at ({row},{col})")
+
+            print_board()
+
+            # Recursive call
+            if solve(row + 1):
+                return True
+
+            # Backtrack
+            board[row][col] = "."
+
+            print(f"Backtracking from ({row},{col})")
+
+            print_board()
+
+    return False
+
+
+# Start solving
+solve(0)
+**********************************************************************
+OUTPUT:
+********************************************************************
+Enter value of N: 4
+Trying Row 0, Col 0
+Placed Q at (0,0)
+Q . . .
+. . . .
+. . . .
+. . . .
+----------
+Trying Row 1, Col 0
+Trying Row 1, Col 1
+Trying Row 1, Col 2
+Placed Q at (1,2)
+Q . . .
+. . Q .
+. . . .
+. . . .
+----------
+Trying Row 2, Col 0
+Trying Row 2, Col 1
+Trying Row 2, Col 2
+Trying Row 2, Col 3
+Backtracking from (1,2)
+Q . . .
+. . . .
+. . . .
+. . . .
+----------
+Trying Row 1, Col 3
+Placed Q at (1,3)
+Q . . .
+. . . Q
+. . . .
+. . . .
+----------
+Trying Row 2, Col 0
+Trying Row 2, Col 1
+Placed Q at (2,1)
+Q . . .
+. . . Q
+. Q . .
+. . . .
+----------
+Trying Row 3, Col 0
+Trying Row 3, Col 1
+Trying Row 3, Col 2
+Trying Row 3, Col 3
+Backtracking from (2,1)
+Q . . .
+. . . Q
+. . . .
+. . . .
+----------
+Trying Row 2, Col 2
+Trying Row 2, Col 3
+Backtracking from (1,3)
+Q . . .
+. . . .
+. . . .
+. . . .
+----------
+Backtracking from (0,0)
+. . . .
+. . . .
+. . . .
+. . . .
+----------
+Trying Row 0, Col 1
+Placed Q at (0,1)
+. Q . .
+. . . .
+. . . .
+. . . .
+----------
+Trying Row 1, Col 0
+Trying Row 1, Col 1
+Trying Row 1, Col 2
+Trying Row 1, Col 3
+Placed Q at (1,3)
+. Q . .
+. . . Q
+. . . .
+. . . .
+----------
+Trying Row 2, Col 0
+Placed Q at (2,0)
+. Q . .
+. . . Q
+Q . . .
+. . . .
+----------
+Trying Row 3, Col 0
+Trying Row 3, Col 1
+Trying Row 3, Col 2
+Placed Q at (3,2)
+. Q . .
+. . . Q
+Q . . .
+. . Q .
+----------
+Solution Found:
+
+. Q . .
+. . . Q
+Q . . .
+. . Q .
+----------
+*************************************************************************************
+2.GRAPH COLORING :
+***********************************************************************************
+CODE:
+
+# Graph Coloring using Backtracking with User Input
+
+# Input number of nodes
+n = int(input("Enter number of nodes: "))
+
+# Create empty graph
+graph = {}
+
+# Input graph connections
+for i in range(n):
+
+    node = input("\nEnter node name: ")
+
+    neighbors = input(
+        f"Enter neighbors of {node} separated by space: "
+    ).split()
+
+    graph[node] = neighbors
+
+# Input colors
+colors = input(
+    "\nEnter colors separated by space: "
+).split()
+
+# Dictionary to store assigned colors
+coloring = {}
+
+# Check if color assignment is safe
+def safe(node, color):
+
+    # Check adjacent nodes
+    for neighbor in graph[node]:
+
+        # If neighbor has same color
+        if neighbor in coloring and coloring[neighbor] == color:
+            return False
+
+    return True
+
+
+# Backtracking function
+def color_graph(nodes, index):
+
+    # If all nodes are colored
+    if index == len(nodes):
+        return True
+
+    # Current node
+    node = nodes[index]
+
+    # Try all colors
+    for color in colors:
+
+        # Check if safe
+        if safe(node, color):
+
+            # Assign color
+            coloring[node] = color
+
+            # Recursive call
+            if color_graph(nodes, index + 1):
+                return True
+
+            # Backtracking
+            del coloring[node]
+
+    return False
+
+
+# List of nodes
+nodes = list(graph.keys())
+
+# Start graph coloring
+if color_graph(nodes, 0):
+
+    print("\nGraph Coloring Solution:\n")
+
+    for node in coloring:
+        print(node, "->", coloring[node])
+
+else:
+    print("\nNo solution found")
+****************************************************************************************
+OUTPUT:
+**********************************************************************
+Enter number of nodes: 4
+
+Enter node name: A
+Enter neighbors of A separated by space: B C
+
+Enter node name: B
+Enter neighbors of B separated by space: A C D
+
+Enter node name: C
+Enter neighbors of C separated by space: A B D
+
+Enter node name: D
+Enter neighbors of D separated by space: B C
+
+Enter colors separated by space: RED GREEN BLUE
+
+Graph Coloring Solution:
+
+A -> RED
+B -> GREEN
+C -> BLUE
+D -> RED
+********************************************************************************************************************
+
+7. Develop an elementary chatbot for any suitable customer interaction application.
+***************************************************************************
+import streamlit as st
+import pandas as pd
+
+# Page Configuration
+st.set_page_config(page_title="InsightBot", layout="wide")
+
+# Title
+st.title("🤖 InsightBot - Smart Data Assistant")
+
+# Session State for Chat History
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Mode Selection
+mode = st.selectbox(
+    "Choose Mode",
+    ["Data Q&A", "KPI Assistant", "Survey Analyzer"]
+)
+
+# File Upload
+file = st.file_uploader(
+    "Upload CSV or Excel File",
+    type=["csv", "xlsx"]
+)
+
+df = None
+
+# Read File
+if file:
+    if file.name.endswith(".csv"):
+        df = pd.read_csv(file)
+    else:
+        df = pd.read_excel(file)
+
+    st.success("File uploaded successfully ✅")
+    st.dataframe(df.head())
+
+# Display Previous Messages
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
+
+# User Input
+user_input = st.chat_input("Ask something...")
+
+if user_input:
+
+    # Store User Message
+    st.session_state.messages.append(
+        {"role": "user", "content": user_input}
+    )
+
+    with st.chat_message("user"):
+        st.write(user_input)
+
+    response = ""
+
+    # ---------------- DATA Q&A ----------------
+    if mode == "Data Q&A":
+
+        if df is None:
+            response = "Please upload a dataset first."
+
+        elif "average" in user_input.lower():
+            response = str(df.mean(numeric_only=True))
+
+        elif "sum" in user_input.lower():
+            response = str(df.sum(numeric_only=True))
+
+        else:
+            response = "Try asking about average or sum."
+
+    # ---------------- KPI ASSISTANT ----------------
+    elif mode == "KPI Assistant":
+
+        if "revenue" in user_input.lower():
+            response = "Revenue is increasing 📈"
+
+        elif "growth" in user_input.lower():
+            response = "Growth rate is stable ✅"
+
+        else:
+            response = "Ask about revenue or growth."
+
+    # ---------------- SURVEY ANALYZER ----------------
+    elif mode == "Survey Analyzer":
+
+        response = "Most responses are positive 😊"
+
+    # Display Assistant Response
+    with st.chat_message("assistant"):
+        st.write(response)
+
+    # Save Assistant Response
+    st.session_state.messages.append(
+        {"role": "assistant", "content": response}
+    )
+***********************************************************************************
+OUTPUT:
+******************************************************************
+python -m streamlit run chatbot.py
+*******************************************************************************
+CLOUD COMPUTING
+************************************************************************************************
+Linear_search:
+**************************************************************************************************
+public class Linear_Search {
+    public static void runSearch(){
+        List<Integer>numList=new List<Integer>{5,15,25,35,45};
+            Integer target=25;
+            Integer result=-1;
+        for (Integer i=0;i<numList.size();i++){
+            if(numList[i]==target){
+                result=i;
+                break;
+            }
+        }
+        System.debug('Result index:'+result);
+    }
+}
+***********************************************************************************************************************
+CALCULATOR:
+**********************************************************************************************************************
+public class Calculator {
+    
+    public static Integer add(Integer a, Integer b) {
+        return a + b;
+    }
+    
+    public static Integer subtract(Integer a, Integer b) {
+        return a - b;
+    }
+    
+    public static Integer multiply(Integer a, Integer b) {
+        return a * b;
+    }
+    
+    public static Decimal divide(Integer a, Integer b) {
+        return (Decimal)a / b; // cast to Decimal for precise division
+    }
+    
+    public static void runCalculator() {
+        System.debug('Add: ' + add(10, 5));
+        System.debug('Subtract: ' + subtract(10, 5));
+        System.debug('Multiply: ' + multiply(10, 5));
+        System.debug('Divide: ' + divide(10, 5));
+    }
+}
+**************************************************************************************************************
+****Case study on Amazon EC2 and learn about Amazon EC2 web services**********
+*************************************************************************************************************
+
+Case Study on Amazon EC2 using Netflix
+Title
+*********************************
+Case Study on Use of Amazon EC2 by Netflix
+****************************
+Aim
+***************
+
+To study Amazon EC2 web services and understand how Netflix uses AWS cloud infrastructure for streaming services.
+*************************
+Introduction
+*******************************
+Netflix is one of the world’s largest online streaming platforms used for movies, web series, and TV shows.
+
+To handle millions of users globally, Netflix uses Amazon Web Services cloud services, especially Amazon EC2.
+
+EC2 helps Netflix:
+
+Run applications on virtual servers
+Handle huge traffic
+Store and process streaming data
+Scale resources automatically
+Why Netflix Uses EC2
+
+Before cloud computing, Netflix used traditional data centers, which had:
+
+High maintenance cost
+Limited scalability
+Hardware failures
+Downtime issues
+
+To solve these problems, Netflix migrated to AWS cloud.
+
+AWS Services Used by Netflix
+AWS Service	Purpose
+EC2	Virtual servers
+S3	Storage
+CloudFront	Content delivery
+Auto Scaling	Automatic scaling
+Elastic Load Balancer	Traffic distribution
+What is EC2?
+
+Amazon EC2 (Elastic Compute Cloud) provides virtual machines in the cloud.
+
+Netflix uses EC2 instances to:
+
+Run streaming applications
+Process user requests
+Analyze viewing data
+Manage global traffic
+How Netflix Uses EC2
+Step 1: User Opens Netflix
+
+A user logs into Netflix app or website.
+**************************************************************
+Step 2: Request Sent to AWS
+
+The request reaches Netflix servers running on EC2 instances.
+
+Step 3: EC2 Processes Request
+
+EC2 instances process:
+
+User authentication
+Video request
+Recommendations
+Step 4: Load Balancer Distributes Traffic
+
+Traffic is divided among multiple EC2 instances.
+
+Step 5: Auto Scaling
+
+If traffic increases, new EC2 instances are automatically created.
+
+Step 6: Video Streaming
+
+The requested video is delivered to the user smoothly.
+
+Architecture Diagram (Simple Explanation)
+
+User → Internet → Load Balancer → EC2 Instances → Database/Storage
+*******************************************************************
+Features of EC2 Used by Netflix
+1. Scalability
+
+Netflix handles millions of users by increasing servers automatically.
+
+2. Elasticity
+
+Resources increase during high traffic and decrease during low traffic.
+
+3. High Availability
+
+Netflix services remain available even if some servers fail.
+
+4. Security
+
+AWS security groups and encryption protect user data.
+
+5. Global Access
+
+Netflix provides streaming worldwide using AWS regions.
+
+Advantages to Netflix
+Reduced infrastructure cost
+Faster deployment
+Better performance
+High availability
+Automatic scaling
+Global content delivery
+
+Challenges Faced
+Managing huge traffic
+Ensuring data security
+Avoiding downtime
+Maintaining performance worldwide
+********************************************************************************************************
+CASE-STUDY
+***************************************************
+Case Study on Amazon EC2 Web Services
+Aim
+***********
+To study and understand Amazon EC2 web services and learn how virtual servers are created and managed in cloud computing.
+
+Introduction:
+*********************
+Amazon Web Services (AWS) is a cloud computing platform provided by Amazon. It offers many cloud services like storage, databases, networking, and virtual servers.
+
+Amazon EC2 (Elastic Compute Cloud) is one of the most important AWS services. It provides virtual machines called EC2 instances that can run applications on the cloud.
+
+EC2 allows users to:
+
+Launch virtual servers
+Install operating systems
+Store data
+Host websites
+Run applications
+
+It follows the pay-as-you-go model.
+
+Objectives
+To understand Amazon EC2 service.
+To create and launch an EC2 instance.
+To study virtualization in cloud computing.
+To learn cloud-based server management.
+
+Requirements
+AWS account
+Internet connection
+Web browser
+Key pair (.pem file)
+Theory
+What is EC2?
+
+Amazon EC2 is a web service that provides scalable computing capacity in the cloud. It allows users to create virtual machines quickly without buying physical hardware.
+
+Features of EC2
+Scalability
+          Resources can be increased or decreased as needed.
+Elasticity
+         Automatic adjustment of resources based on workload.
+Security
+      Security groups and firewalls protect instances.
+Pay-as-you-go
+           Users pay only for used resources.
+High Availability
+           Services are available through multiple regions.
+
+Steps to Launch EC2 Instance
+Step 1: Login to AWS
+Open AWS Management Console and sign in.
+
+Step 2: Open EC2 Dashboard
+Search EC2 in AWS services.
+
+Step 3: Launch Instance
+Click on “Launch Instance”.
+
+Step 4: Choose AMI
+Select operating system like Ubuntu or Amazon Linux.
+
+Step 5: Select Instance Type
+Choose t2.micro (free tier).
+
+Step 6: Configure Instance
+Set network and storage options.
+
+Step 7: Configure Security Group
+Allow:
+
+SSH (Port 22)
+HTTP (Port 80)
+Step 8: Create Key Pair
+Download .pem key file for secure login.
+
+Step 9: Launch Instance
+Instance starts running.
+
+Working of EC2
+User requests virtual machine.
+AWS allocates resources.
+EC2 instance is launched.
+User connects using SSH.
+Applications are deployed on instance.
+
+
+
+Advantages of EC2
+No hardware cost
+Easy deployment
+Flexible scaling
+High security
+Global accessibility
+
+Disadvantages of EC2
+Requires internet
+Security configuration needed
+Cost may increase with usage
+
+Applications of EC2
+Website hosting
+Application deployment
+Big data processing
+Testing environments
+Cloud storage systems
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
