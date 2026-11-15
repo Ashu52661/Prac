@@ -1,0 +1,417 @@
+****************************************************
+PRACTICAL NO:01
+
+Write a program non-recursive and recursive program to calculate Fibonacci numbers and analyze their time and space complexity. 
+******************************************************************************************************************************************
+
+PROGRAM CODE:RECURSIVE
+************************************************************
+
+import java.util.Scanner;
+
+public class FibonacciRecursive {
+
+    // Recursive method
+    static int fibonacci(int n) {
+
+        if (n <= 1) {
+            return n;
+        }
+
+        return fibonacci(n - 1) + fibonacci(n - 2);
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of terms: ");
+        int n = sc.nextInt();
+
+        System.out.println("Fibonacci Series:");
+
+        for (int i = 0; i < n; i++) {
+            System.out.print(fibonacci(i) + " ");
+        }
+
+        sc.close();
+    }
+}
+**************************************************************
+OUTPUT:
+****************************************
+Enter number of terms: 7
+Fibonacci Series:
+0 1 1 2 3 5 8
+*************************************************
+PROGRAM CODE:NON-RECURSIVE CODE
+*******************************************************
+import java.util.Scanner;
+
+public class java {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of terms: ");
+        int n = sc.nextInt();
+
+        int a = 0, b = 1;
+
+        System.out.println("Fibonacci Series:");
+
+        for (int i = 1; i <= n; i++) {
+            System.out.print(a + " ");
+
+            int c = a + b;
+            a = b;
+            b = c;
+        }
+
+        sc.close();
+    }
+}
+********************************************
+OUTPUT:
+********************************************
+Enter number of terms: 10
+Fibonacci Series:
+0 1 1 2 3 5 8 13 21 34 
+PS C:\Users\apekh\Desktop\LP-3> 
+******************************************************************
+PRACTICAL NO:02
+
+2.Write a program to implement Huffman Encoding using a greedy strategy. 
+*******************************************************************
+
+PROGRAM CODE:
+*******************************************************
+import java.util.*;
+
+class HuffmanNode {
+    char ch;
+    int freq;
+    HuffmanNode left;
+    HuffmanNode right;
+
+    // Constructor for leaf node
+    HuffmanNode(char ch, int freq) {
+        this.ch = ch;
+        this.freq = freq;
+    }
+
+    // Constructor for internal node
+    HuffmanNode(int freq, HuffmanNode left, HuffmanNode right) {
+        this.ch = '-';
+        this.freq = freq;
+        this.left = left;
+        this.right = right;
+    }
+}
+
+public class HuffmanEncoding {
+
+    static void generateCodes(HuffmanNode root, String code) {
+
+        if (root == null)
+            return;
+
+        // Check leaf node
+        if (root.left == null && root.right == null) {
+            System.out.println(root.ch + " : " + code);
+            return;
+        }
+
+        generateCodes(root.left, code + "0");
+        generateCodes(root.right, code + "1");
+    }
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of characters: ");
+        int n = sc.nextInt();
+
+        PriorityQueue<HuffmanNode> pq =
+            new PriorityQueue<>((a, b) -> a.freq - b.freq);
+
+        // Input characters and frequencies
+        for (int i = 0; i < n; i++) {
+
+            System.out.print("Enter character: ");
+            char ch = sc.next().charAt(0);
+
+            System.out.print("Enter frequency: ");
+            int freq = sc.nextInt();
+
+            pq.add(new HuffmanNode(ch, freq));
+        }
+
+        // Build Huffman Tree
+        while (pq.size() > 1) {
+
+            HuffmanNode left = pq.poll();
+            HuffmanNode right = pq.poll();
+
+            HuffmanNode newNode =
+                new HuffmanNode(left.freq + right.freq, left, right);
+
+            pq.add(newNode);
+        }
+
+        // Get root node
+        HuffmanNode root = pq.poll();
+
+        System.out.println("\nHuffman Codes:");
+
+        generateCodes(root, "");
+
+        sc.close();
+    }
+}
+***********************************************
+OUTPUT:
+***********************************************
+Enter number of characters: 6
+Enter character: a
+Enter frequency: 5
+Enter character: b
+Enter frequency: 6
+Enter character: c
+Enter frequency: 12
+Enter character: d
+Enter frequency: 13
+Enter character: e
+Enter frequency: 16
+Enter character: f
+Enter frequency: 45
+
+Huffman Codes:
+f : 0
+a : 1000
+b : 1001
+c : 101
+d : 110
+e : 111
+PS C:\Users\apekh\Desktop\LP-3> 
+*************************************************************************************************
+PRACTICAL NO:03
+
+Write a program to solve a fractional Knapsack problem using a greedy method. 
+******************************************************************************
+PROGRAM CODE:
+********************************************************************************
+import java.util.Scanner;
+public class FractionalKnapsack {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of items: ");
+        int n = sc.nextInt();
+
+        int[] weight = new int[n];
+        int[] profit = new int[n];
+        double[] ratio = new double[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter weight and profit of item " + (i + 1) + ": ");
+            weight[i] = sc.nextInt();
+            profit[i] = sc.nextInt();
+            ratio[i] = (double) profit[i] / weight[i];
+        }
+
+        System.out.print("Enter knapsack capacity: ");
+        int capacity = sc.nextInt();
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (ratio[i] < ratio[j]) {
+                    double tempRatio = ratio[i];
+                    ratio[i] = ratio[j];
+                    ratio[j] = tempRatio;
+
+                    int tempWeight = weight[i];
+                    weight[i] = weight[j];
+                    weight[j] = tempWeight;
+
+                    int tempProfit = profit[i];
+                    profit[i] = profit[j];
+                    profit[j] = tempProfit;
+                }
+            }
+        }
+
+        double totalProfit = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (capacity == 0) {
+                break;
+            }
+
+            if (weight[i] <= capacity) {
+                totalProfit += profit[i];
+                capacity -= weight[i];
+            } else {
+                totalProfit += ratio[i] * capacity;
+                capacity = 0;
+            }
+        }
+
+        System.out.println("Maximum Profit = " + totalProfit);
+        sc.close();
+    }
+}
+*****************************************************************************
+OUTPUT:
+*****************************************************************************
+Enter number of items: 3
+Enter weight and profit of item 1: 10 60
+Enter weight and profit of item 2: 20 100
+Enter weight and profit of item 3: 30 120
+Enter knapsack capacity: 50
+Maximum Profit = 240.0
+PS C:\Users\apekh\Desktop\LP-3> 
+*************************************************************************************
+
+PRACTICAL NO:04
+
+Write a program to solve a 0-1 Knapsack problem using dynamic programming or branch and bound strategy. 
+**************************************************************************************
+PROGRAM CODE:
+************************************************************************************
+import java.util.Scanner;
+public class Knapsack01 {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of items: ");
+        int n = sc.nextInt();
+
+        int[] weight = new int[n];
+        int[] profit = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter weight and profit of item " + (i + 1) + ": ");
+            weight[i] = sc.nextInt();
+            profit[i] = sc.nextInt();
+        }
+
+        System.out.print("Enter knapsack capacity: ");
+        int capacity = sc.nextInt();
+
+        int[][] dp = new int[n + 1][capacity + 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int w = 1; w <= capacity; w++) {
+                if (weight[i - 1] <= w) {
+                    dp[i][w] = Math.max(
+                        profit[i - 1] + dp[i - 1][w - weight[i - 1]],
+                        dp[i - 1][w]
+                    );
+                } else {
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
+        }
+
+        System.out.println("Maximum Profit = " + dp[n][capacity]);
+
+        sc.close();
+    }
+}
+************************************************************
+OUTPUT:
+**************************************
+Enter number of items: 4
+Enter weight and profit of item 1: 2 12
+Enter weight and profit of item 2: 1 10
+Enter weight and profit of item 3: 3 20
+Enter weight and profit of item 4: 2 15
+Enter knapsack capacity: 5
+Maximum Profit = 37
+PS C:\Users\apekh\Desktop\LP-3>
+***************************************************************************
+PRACTICAK NO:05
+
+Design n-Queens matrix having first Queen placed. Use backtracking to place remaining Queens to generate the final n-queen‘s matrix.
+******************************************************************************
+PROGRAM CODE:'
+********************************************************************************
+import java.util.Scanner;
+
+public class NQueens {
+    static int n;
+    static int[][] board;
+
+    static boolean isSafe(int row, int col) {
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 1)
+                return false;
+        }
+
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 1)
+                return false;
+        }
+
+        for (int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+            if (board[i][j] == 1)
+                return false;
+        }
+
+        return true;
+    }
+
+    static boolean solve(int row) {
+        if (row == n)
+            return true;
+
+        for (int col = 0; col < n; col++) {
+            if (isSafe(row, col)) {
+                board[row][col] = 1;
+
+                if (solve(row + 1))
+                    return true;
+
+                board[row][col] = 0;
+            }
+        }
+
+        return false;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter value of N: ");
+        n = sc.nextInt();
+
+        board = new int[n][n];
+
+        if (solve(0)) {
+            System.out.println("N-Queens Matrix:");
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    System.out.print(board[i][j] + " ");
+                }
+                System.out.println();
+            }
+        } else {
+            System.out.println("No solution exists.");
+        }
+
+        sc.close();
+    }
+}
+****************************************************************************************************
+OUTPUT:
+*****************************************************
+Enter value of N: 4
+N-Queens Matrix:
+0 1 0 0 
+0 0 0 1 
+1 0 0 0 
+0 0 1 0 
+PS C:\Users\apekh\Desktop\LP-3> 
+************************************************************************************************ 
+
